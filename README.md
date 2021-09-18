@@ -40,7 +40,7 @@ docker-compose up -d
 Hydrate DB with SQL dump files:
 
 ```
-sudo docker-compose exec crimebb "sh /usr/local/bin/restore.sh"
+sudo docker-compose exec crimebb sh "/usr/local/bin/restore.sh"
 ```
 
 Now, Postgres project database is up and accesible in `localhost` port `5432`.
