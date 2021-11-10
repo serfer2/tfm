@@ -29,3 +29,6 @@ HF_MARKET_SUBFORUMS = {
     '217': 'Partnerships, Hiring, and Personnel',
     '255': 'Rewards and Small Favors',
 }
+
+CRAWLING_DIRECTION_FORWARD = 1
+CRAWLING_DIRECTION_BACKWARD = 2
