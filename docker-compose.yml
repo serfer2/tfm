@@ -13,7 +13,7 @@ services:
       - ./docker/postgres_crimebb/.env
     volumes:
       - "./postgres-data/:/var/lib/postgresql/data/:rw"
-      - "../dumps_crimebb/:/dumps:ro"
+      - "../crimeBB/:/dumps:ro"
     ports:
       - "5432:5432"
     logging:

@@ -49,7 +49,7 @@ DB connection credentials are the same you've set in `docker/postgres_crimebb/.e
 
 **NOTE**
 
-You'll need to place `.sql` dump files in folder `../called dumps_crimebb` (one level hihger than current dir)
+You'll need to place `.sql` dump files in folder called `../crimeBB` (one level hihger than current dir)
 
 ## TIPS
 
