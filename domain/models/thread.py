@@ -23,6 +23,6 @@ class Thread:
         return (
             self.id == obj.id and
             self.site == obj.site and
-            self.forum == obj.forum,
+            self.forum == obj.forum and
             self.url == obj.url
         )
