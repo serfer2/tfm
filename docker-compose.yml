@@ -2,6 +2,27 @@ version: "3.8"
 
 services:
 
+  tfm:
+    restart: always
+    image: "python:3.10-slim"
+    hostname: "tfm"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    volumes:
+      - ./:/app:rw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    tty: true
+    depends_on:
+      crimebb:
+        condition: service_healthy
+
   crimebb:
     hostname: "crimebb"
     restart: "always"
@@ -10,7 +31,7 @@ services:
       context: "."
       dockerfile: ./docker/postgres_crimebb/Dockerfile
     env_file:
-      - ./docker/postgres_crimebb/.env
+      - .env
     volumes:
       - "./postgres-data/:/var/lib/postgresql/data/:rw"
       - "../crimeBB/:/dumps:ro"
