@@ -1,3 +1,5 @@
+HF_SITE_ID = 0
+
 #  https://hackforums.net/forumdisplay.php?fid=<int>
 HF_MARKET_SUBFORUMS = {
     '163': 'Marketplace Discussions',

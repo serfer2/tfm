@@ -35,3 +35,6 @@ class FakeCursor:
             response = self._registries[self._reg_index]
             self._reg_index += 1
         return response
+
+    def fetchone(self):
+        return self.fetchall()
