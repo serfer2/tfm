@@ -23,6 +23,6 @@ class Post:
         return (
             self.id == obj.id and
             self.site == obj.site and
-            self.forum == obj.forum,
+            self.forum == obj.forum and
             self.thread == obj.thread
         )
