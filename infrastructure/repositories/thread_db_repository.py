@@ -14,8 +14,6 @@ from shared.constants import (
     CRAWLING_DIRECTION_FORWARD,
 )
 
-DATASETS_DIR = 'datasets/dukascopy/'
-
 
 @ThreadRepository.register
 class ThreadDBRepository:
