@@ -3,3 +3,4 @@ expects==0.9.0
 eggs==0.0.3
 psycopg2-binary==2.9.1
 dataclasses==0.6
+flake8==4.0.1

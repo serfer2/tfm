@@ -13,9 +13,9 @@ from domain.models import (
 class PostRepository(ABC):
 
     @abstractclassmethod
-    def read(self, site: Thread) -> Iterable[Post]:
+    def read(self, thread: Thread) -> Iterable[Post]:
         pass
 
     @abstractclassmethod
-    def read_first(self, site: Thread) -> Post:
+    def read_first(self, thread: Thread) -> Post:
         pass

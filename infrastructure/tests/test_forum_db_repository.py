@@ -5,10 +5,7 @@ from expects import (
     expect,
 )
 
-from domain.models import (
-    Forum,
-    Site,
-)
+from domain.models import Forum
 from infrastructure.repositories import ForumDBRepository
 from tests.fake_clients import FakeDBC
 
@@ -21,11 +18,6 @@ class ForumDBRepositoryTestCase(TestCase):
         )
         fake_dbc = FakeDBC(registries=db_registries)
         repository = ForumDBRepository(dbc=fake_dbc)
-        site = Site(
-            id=0,
-            url='http://www.any_url.com',
-            name='A Site',
-        )
         expected_forums = [
             Forum(
                 id=123,
@@ -38,7 +30,10 @@ class ForumDBRepositoryTestCase(TestCase):
             'https://www.youtube.com/watch?v=TQrSEsVy35Q',
         ]
 
-        forums = repository.read(site=site, url_patterns=url_patterns)
+        forums = repository.filter_by_url_pattern(
+            site_id=0,
+            url_patterns=url_patterns
+        )
 
         expect(forums).to(equal(expected_forums))
 
@@ -48,11 +43,6 @@ class ForumDBRepositoryTestCase(TestCase):
         )
         fake_dbc = FakeDBC(registries=db_registries)
         repository = ForumDBRepository(dbc=fake_dbc)
-        site = Site(
-            id=0,
-            url='http://www.any_url.com',
-            name='A Site',
-        )
         url_patterns = [
             'https://www.youtube.com/watch?v=TQrSEsVy35Q',
         ]
@@ -73,7 +63,10 @@ class ForumDBRepositoryTestCase(TestCase):
                 f."URL" ASC
         """
 
-        repository.read(site=site, url_patterns=url_patterns)
+        repository.filter_by_url_pattern(
+            site_id=0,
+            url_patterns=url_patterns
+        )
 
         queries = fake_dbc.cursor().queries
         expect(len(queries)).to(equal(1))
