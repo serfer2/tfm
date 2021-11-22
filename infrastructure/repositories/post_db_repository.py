@@ -15,11 +15,13 @@ from infrastructure.db import open_dbc
 class PostDBRepository:
 
     def __init__(self, dbc: Any = None):
+        self._should_close_dbc = dbc is None
         self._dbc = dbc or open_dbc()
 
     def __del__(self):
         try:
-            self._dbc.close()
+            if self._should_close_dbc:
+                self._dbc.close()
         except Exception:
             pass
 

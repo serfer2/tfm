@@ -1,12 +1,12 @@
 from typing import (
     Any,
     Iterable,
+    List,
 )
 
-from domain.models import (
-    Forum,
-    Thread,
-)
+from psycopg2.extensions import AsIs
+
+from domain.models import Thread
 from domain.repositories import ThreadRepository
 from infrastructure.db import open_dbc
 from shared.constants import (
@@ -19,17 +19,19 @@ from shared.constants import (
 class ThreadDBRepository:
 
     def __init__(self, dbc: Any = None):
+        self._should_close_dbc = dbc is None
         self._dbc = dbc or open_dbc()
 
     def __del__(self):
         try:
-            self._dbc.close()
+            if self._should_close_dbc:
+                self._dbc.close()
         except Exception:
             pass
 
-    def read(self, forum: Forum) -> Iterable[Thread]:
+    def read(self, site_id: int, forum_ids: List[int]) -> Iterable[Thread]:
         threads = []
-        for row in self._get_from_db(forum=forum):
+        for row in self._get_from_db(site_id=site_id, forum_ids=forum_ids):
             dir = CRAWLING_DIRECTION_FORWARD if row[5] == 'FORWARD' else CRAWLING_DIRECTION_BACKWARD
             threads.append(
                 Thread(
@@ -43,7 +45,7 @@ class ThreadDBRepository:
             )
         return threads
 
-    def _get_from_db(self, forum: Forum) -> Iterable[Thread]:
+    def _get_from_db(self, site_id: int, forum_ids: List[int]) -> Iterable[Thread]:
         cur = self._dbc.cursor()
         query = """
             SELECT
@@ -60,8 +62,9 @@ class ThreadDBRepository:
             WHERE
                 s."IdSite" = %s AND
                 f."Site" = s."IdSite" AND
-                f."IdForum" = %s AND
+                f."IdForum" IN %s AND
                 t."Forum" = f."IdForum"
         """
-        cur.execute(query, (forum.site, forum.id))
+        forums = '(' + ','.join([str(id) for id in forum_ids]) + ')'
+        cur.execute(query, (site_id, AsIs(forums)))
         return cur.fetchall()

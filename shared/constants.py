@@ -1,7 +1,7 @@
 HF_SITE_ID = 0
 
 #  https://hackforums.net/forumdisplay.php?fid=<int>
-HF_MARKET_SUBFORUMS = {
+HF_MARKET_SUBFORUMS_FID = {
     '163': 'Marketplace Discussions',
     '402': 'Promotional Advertising',
     '186': 'Free Services and Giveaways',
@@ -34,3 +34,26 @@ HF_MARKET_SUBFORUMS = {
 
 CRAWLING_DIRECTION_FORWARD = 1
 CRAWLING_DIRECTION_BACKWARD = 2
+
+RELATED_TERMS = {
+    'tech_terms': ('botnet', 'cryptostresser', 'ddos', 'mirai', 'stresser', 'webstresser'),
+    'trade_terms': {
+        'trade_terms_currency': (
+            '£', '€', '$', '₽',
+            'pound', 'euro', 'dollar', 'ruble',
+            'pounds', 'euros', 'dollars', 'rubles',
+            'bitcoin', 'ecoin', 'ethereum', 'litecoin',
+            'btc', 'eth', 'ltc',
+        ),
+        'trade_terms_buy': (
+            'wtb', 'buy', 'pay', 'market', 'paid', 'payment', 'price',
+            'service', 'source',
+        ),
+        'trade_terms_sell': (
+            'wts', 'payment', 'premium',
+            'interkassa', 'paypal', 'perfectmoney',
+            'price', 'sale', 'selling', 'selly',
+            'service', 'shop', 'source', 'store', 'trusted',
+        ),
+    },
+}

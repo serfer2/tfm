@@ -1,12 +1,10 @@
 from typing import (
     Any,
     Iterable,
+    List,
 )
 
-from domain.models import (
-    Forum,
-    Site,
-)
+from domain.models import Forum
 from domain.repositories import ForumRepository
 from infrastructure.db import open_dbc
 
@@ -15,18 +13,20 @@ from infrastructure.db import open_dbc
 class ForumDBRepository:
 
     def __init__(self, dbc: Any = None):
+        self._should_close_dbc = dbc is None
         self._dbc = dbc or open_dbc()
 
     def __del__(self):
         try:
-            self._dbc.close()
+            if self._should_close_dbc:
+                self._dbc.close()
         except Exception:
             pass
 
-    def read(self, site: Site, url_patterns: Iterable[str]) -> Iterable[Forum]:
+    def filter_by_url_pattern(self, site_id: int, url_patterns: Iterable[str]) -> List[Forum]:
         forums = []
         for url_pattern in url_patterns:
-            row = self._get_from_db(site=site, url_pattern=url_pattern)
+            row = self._get_from_db(site_id=site_id, url_pattern=url_pattern)
             forums.append(
                 Forum(
                     id=int(row[0]),
@@ -37,7 +37,7 @@ class ForumDBRepository:
             )
         return forums
 
-    def _get_from_db(self, site: Site, url_pattern: str) -> Iterable[Forum]:
+    def _get_from_db(self, site_id: int, url_pattern: str) -> Iterable[Forum]:
         cur = self._dbc.cursor()
         query = """
             SELECT
@@ -55,5 +55,5 @@ class ForumDBRepository:
             ORDER BY
                 f."URL" ASC
         """
-        cur.execute(query, (site.id, url_pattern + '%'))
+        cur.execute(query, (site_id, url_pattern + '%'))
         return cur.fetchone()
