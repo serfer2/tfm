@@ -1,6 +1,8 @@
+from datetime import datetime
 from typing import (
     Iterable,
     List,
+    TypedDict,
 )
 
 from domain.models import (
@@ -19,6 +21,11 @@ from shared.constants import (
 )
 
 
+class ThreadData(TypedDict):
+    content: str  # Thread heading + first Post content
+    tstamp: datetime  # first Post timestamp
+
+
 class HackForumsThreadsExtraction:
 
     def __init__(
@@ -31,7 +38,7 @@ class HackForumsThreadsExtraction:
         self._thread_repository = thread_repository
         self._post_repository = post_repository
 
-    def extract(self) -> Iterable[Thread]:
+    def extract(self) -> List[ThreadData]:
         subforum_ids = [subforum.id for subforum in self._get_market_subforums()]
         threads = self._read_forums_threads(forum_ids=subforum_ids)
         return self._filter_threads_by_related_terms(threads=threads)
@@ -50,7 +57,7 @@ class HackForumsThreadsExtraction:
             forum_ids=forum_ids
         )
 
-    def _filter_threads_by_related_terms(self, threads: Iterable[Thread]) -> Iterable[Thread]:
+    def _filter_threads_by_related_terms(self, threads: Iterable[Thread]) -> List[ThreadData]:
         """
         An interesting thread, from HAckForums, should match almost:
          - One or more terms from tech_terms list.
@@ -77,7 +84,8 @@ class HackForumsThreadsExtraction:
                             match = True
                             break
                     if match:
-                        interesting_threads.append(thread)
+                        tstamp = first_post.timestamp if first_post is not None else None
+                        interesting_threads.append({'content': content, 'tstamp': tstamp})
                         break
 
         return interesting_threads

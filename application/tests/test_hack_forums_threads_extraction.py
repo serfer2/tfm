@@ -8,10 +8,7 @@ from expects import (
 )
 
 from application.services import HackForumsThreadsExtraction
-from domain.models import (
-    Forum,
-    Thread,
-)
+from domain.models import Forum
 from infrastructure.repositories import (
     ForumDBRepository,
     PostDBRepository,
@@ -124,20 +121,17 @@ class HackForumsThreadsExtractionTestCase(TestCase):
         forum_repo = ForumDBRepository(dbc=fake_dbc)
         post_repo = PostDBRepository(dbc=fake_dbc)
         thread_repo = ThreadDBRepository(dbc=fake_dbc)
-        positive_match_thread = Thread(
-            id=111,
-            site=0,
-            forum=111111,
-            heading='Stresser SERVICE',
-            url='https://hackforums.net/showthread.php?tid=5880980',
-            direction='BACKWARD',
-        )
         service = HackForumsThreadsExtraction(
             forum_repository=forum_repo,
             thread_repository=thread_repo,
             post_repository=post_repo,
         )
 
-        threads = service.extract()
+        interesting_threads_data = service.extract()
 
-        expect(threads).to(equal([positive_match_thread, ]))
+        expect(interesting_threads_data).to(equal([
+            {
+                'content': 'stresser service from 25$, trusted results!',
+                'tstamp': tstamp,
+            },
+        ]))
