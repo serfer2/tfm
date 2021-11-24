@@ -11,8 +11,7 @@ from application.services import HackForumsThreadsExtraction
 from domain.models import Forum
 from infrastructure.repositories import (
     ForumDBRepository,
-    PostDBRepository,
-    ThreadDBRepository,
+    ThreadSummaryDBRepository,
 )
 from tests.fake_clients import FakeDBC
 
@@ -41,8 +40,7 @@ class HackForumsThreadsExtractionTestCase(TestCase):
             )
         )
         forum_repo = ForumDBRepository(dbc=fake_dbc)
-        post_repo = PostDBRepository(dbc=fake_dbc)
-        thread_repo = ThreadDBRepository(dbc=fake_dbc)
+        thread_repo = ThreadSummaryDBRepository(dbc=fake_dbc)
         expected_subforums = [
             Forum(
                 id=1,
@@ -65,8 +63,7 @@ class HackForumsThreadsExtractionTestCase(TestCase):
         ]
         service = HackForumsThreadsExtraction(
             forum_repository=forum_repo,
-            thread_repository=thread_repo,
-            post_repository=post_repo,
+            thread_summary_repository=thread_repo,
         )
 
         subforums = service._get_market_subforums()
@@ -76,62 +73,67 @@ class HackForumsThreadsExtractionTestCase(TestCase):
     @patch('application.services.hack_forums_threads_extraction.HF_MARKET_SUBFORUMS_FID', FAKE_FIDS)
     def test_it_gets_threads_from_subforums_related_with_relevant_terms(self):
         tstamp = datetime.now()
-        forum1_db_results = (111111, 0, 'Forum 1', 'https://hackforums.net/forumdisplay.php?fid=111&page=3')
-        forum2_db_results = (222222, 0, 'Forum 2', 'https://hackforums.net/forumdisplay.php?fid=222')
-        forum3_db_results = (333333, 0, 'Forum 3', 'https://hackforums.net/forumdisplay.php?fid=333')
-        thread1_db_data = (
-            111,
-            0,
+        forum1_db_results = (
             111111,
-            'Stresser SERVICE',
-            'https://hackforums.net/showthread.php?tid=5880980',
-            'BACKWARD',
-        )
-        thread2_db_data = (
-            222,
             0,
+            'Forum 1',
+            'https://hackforums.net/forumdisplay.php?fid=111&page=3',
+        )
+        forum2_db_results = (
             222222,
-            'How to build a DDOS network',
-            'https://hackforums.net/showthread.php?tid=5882071',
-            'BACKWARD',
-        )
-        thread3_db_data = (
-            333,
             0,
-            333333,
-            'Ganchillo course',
-            'https://hackforums.net/showthread.php?tid=5882071',
-            'BACKWARD',
+            'Forum 2',
+            'https://hackforums.net/forumdisplay.php?fid=222',
         )
-        threads_query_result = [thread1_db_data, thread2_db_data, thread3_db_data]
-        thread_1_posts_db_query_results = [(1, 111, tstamp, 'from 25$, trusted results!'), ]
-        thread_2_posts_db_query_results = [(2, 222, tstamp, 'just for educational purposes'), ]
-        thread_3_posts_db_query_results = [(3, 333, tstamp, 'For sale, PayPal accepted.'), ]
+        forum3_db_results = (
+            333333,
+            0,
+            'Forum 3',
+            'https://hackforums.net/forumdisplay.php?fid=333',
+        )
+        thread_summary_db_data_1 = (
+            1,
+            0,
+            3,
+            tstamp,
+            'from 25$, trusted results! ',
+            'Stresser SERVICE',
+        )
+        thread_summary_db_data_2 = (
+            2,
+            0,
+            4,
+            tstamp,
+            'just for educational purposes',
+            'How to build a DDOS network',
+        )
+        thread_summaries_query_result = [
+            thread_summary_db_data_1,
+            thread_summary_db_data_2,
+        ]
         fake_dbc = FakeDBC(
             registries=(
                 forum1_db_results,
                 forum2_db_results,
                 forum3_db_results,
-                threads_query_result,
-                thread_1_posts_db_query_results,
-                thread_2_posts_db_query_results,
-                thread_3_posts_db_query_results,
+                thread_summaries_query_result,
             )
         )
         forum_repo = ForumDBRepository(dbc=fake_dbc)
-        post_repo = PostDBRepository(dbc=fake_dbc)
-        thread_repo = ThreadDBRepository(dbc=fake_dbc)
+        thread_repo = ThreadSummaryDBRepository(dbc=fake_dbc)
         service = HackForumsThreadsExtraction(
             forum_repository=forum_repo,
-            thread_repository=thread_repo,
-            post_repository=post_repo,
+            thread_summary_repository=thread_repo,
         )
+        related_terms = ('stresser', 'mirai',)
 
-        interesting_threads_data = service.extract()
+        interesting_threads_data = service.extract(related_terms=related_terms)
 
         expect(interesting_threads_data).to(equal([
             {
                 'content': 'stresser service from 25$, trusted results!',
                 'tstamp': tstamp,
+                'matching_terms': ['stresser', ],
+                'word_list': ['stresser', 'service', 'from', '25$', 'trusted', 'results'],
             },
         ]))

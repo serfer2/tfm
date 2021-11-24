@@ -36,7 +36,11 @@ CRAWLING_DIRECTION_FORWARD = 1
 CRAWLING_DIRECTION_BACKWARD = 2
 
 RELATED_TERMS = {
-    'tech_terms': ('botnet', 'cryptostresser', 'ddos', 'mirai', 'stresser', 'webstresser'),
+    'tech_terms': (
+        'botnet',  'darkddoser', 'ddoser', 'ddosing', 'ddos', 'booter', 'doser',
+        'cryptostresser', 'webstresser', 'stress tester', 'stresser',
+        'mirai',
+    ),
     'trade_terms': {
         'trade_terms_currency': (
             '£', '€', '$', '₽',
