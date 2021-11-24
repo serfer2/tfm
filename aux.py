@@ -32,7 +32,7 @@ end = datetime.now()
 for related_thread_data in related_threads_data:
     print(
         f'[{related_thread_data.get("tstamp").strftime("%Y-%m-%d %H:%M:%S")}] '
-        f'{related_thread_data.get("matching_terms")[0]:12s} -> '
+        f'{related_thread_data.get("matching_terms")} -> '
         f'{related_thread_data.get("content")[:150]}'
     )
 

@@ -37,7 +37,7 @@ CRAWLING_DIRECTION_BACKWARD = 2
 
 RELATED_TERMS = {
     'tech_terms': (
-        'botnet',  'darkddoser', 'ddoser', 'ddosing', 'ddos', 'booter', 'doser',
+        'botnet', 'darkddoser', 'ddoser', 'doser', 'ddosing', 'ddos', 'booter',
         'cryptostresser', 'webstresser', 'stress tester', 'stresser',
         'mirai',
     ),
