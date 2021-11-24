@@ -4,3 +4,5 @@ eggs==0.0.3
 psycopg2-binary==2.9.1
 dataclasses==0.6
 flake8==4.0.1
+jupyter==1.0.0
+notebook==6.4.6

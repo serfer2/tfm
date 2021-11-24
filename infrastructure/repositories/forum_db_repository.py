@@ -27,14 +27,15 @@ class ForumDBRepository:
         forums = []
         for url_pattern in url_patterns:
             row = self._get_from_db(site_id=site_id, url_pattern=url_pattern)
-            forums.append(
-                Forum(
-                    id=int(row[0]),
-                    site=int(row[1]),
-                    title=row[2].strip(),
-                    url=row[3].strip(),
+            if row:
+                forums.append(
+                    Forum(
+                        id=int(row[0]),
+                        site=int(row[1]),
+                        title=row[2].strip(),
+                        url=row[3].strip(),
+                    )
                 )
-            )
         return forums
 
     def _get_from_db(self, site_id: int, url_pattern: str) -> Iterable[Forum]:
