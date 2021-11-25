@@ -76,10 +76,15 @@ class HackForumsThreadsExtraction:
             content = hf_clean_text(f'{thread_summary.heading} {first_post_text}'.strip().lower())
             word_list = tokenize(content)
             matching_terms = []
+            matching_words = []
 
             for tech_term in tech_terms:
                 for word in word_list:
+                    # Avoid false positives with same word for many simmilar tech terms
+                    if word in matching_words:
+                        continue
                     if tech_term in word:
+                        matching_words.append(word)
                         matching_terms.append(tech_term)
                         break
 
