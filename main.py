@@ -70,12 +70,12 @@ def _generate_groundtruth_and_full_datasets() -> None:
 def _load_category_annotated_datasets() -> Tuple[List[str]]:
     supply = []
     demand = []
-    with open('supply.csv', 'r') as fin:
+    with open('datasets/supply.csv', 'r') as fin:
         for line in fin.readlines():
             _l = line.strip()
             if _l:
                 supply.append(_l)
-    with open('demand.csv', 'r') as fin:
+    with open('datasets/demand.csv', 'r') as fin:
         for line in fin.readlines():
             _l = line.strip()
             if _l:
