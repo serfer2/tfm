@@ -23,12 +23,4 @@ def tokenize(text: str) -> List[str]:
         repl=' ',
         string=text.lower(),
     )
-    words = [_w.strip() for _w in lower_cleaned_text.split(' ') if _w.strip()]
-    # unique words in same order of appearance
-    unique_words = []
-    for word in words:
-        if word in unique_words:
-            continue
-        unique_words.append(word)
-
-    return unique_words
+    return [_w.strip() for _w in lower_cleaned_text.split(' ') if _w.strip()]

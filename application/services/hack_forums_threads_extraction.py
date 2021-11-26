@@ -1,11 +1,10 @@
-from datetime import datetime
 from typing import (
     Iterable,
-    List,
-    TypedDict
+    List
 )
 
 from domain.models import (
+    Document,
     Forum,
     ThreadSummary,
 )
@@ -23,13 +22,6 @@ from shared.tools import (
 )
 
 
-class ThreadData(TypedDict):
-    content: str
-    tstamp: datetime
-    matching_terms: List[str]
-    word_list: List[str]
-
-
 class HackForumsThreadsExtraction:
 
     def __init__(
@@ -40,7 +32,7 @@ class HackForumsThreadsExtraction:
         self._forum_repository = forum_repository
         self._thread_summary_repository = thread_summary_repository
 
-    def extract(self, related_terms: Iterable[str]) -> List[ThreadData]:
+    def extract(self, related_terms: Iterable[str]) -> List[Document]:
         subforum_ids = [subforum.id for subforum in self._get_market_subforums()]
         thread_summaries = self._read_forums_threads(forum_ids=subforum_ids)
         return self._filter_threads_by_related_terms(thread_summaries, related_terms)
@@ -63,37 +55,31 @@ class HackForumsThreadsExtraction:
         self,
         thread_summaries: Iterable[ThreadSummary],
         related_terms: Iterable[str],
-    ) -> List[ThreadData]:
+    ) -> List[Document]:
         """
         An interesting thread, almost one or more related terms.
         """
         tech_terms = [term.lower() for term in related_terms]
-        related_threads = []
+        documents = []
 
         for thread_summary in thread_summaries:
 
             first_post_text = thread_summary.first_post_content or ''
             content = hf_clean_text(f'{thread_summary.heading} {first_post_text}'.strip().lower())
             word_list = tokenize(content)
+            clean_content = ' '.join(word_list)
             matching_terms = []
-            matching_words = []
 
             for tech_term in tech_terms:
-                for word in word_list:
-                    # Avoid false positives with same word for many simmilar tech terms
-                    if word in matching_words:
-                        continue
-                    if tech_term in word:
-                        matching_words.append(word)
-                        matching_terms.append(tech_term)
-                        break
+                if tech_term in clean_content:
+                    matching_terms.append(tech_term)
 
             if matching_terms:
-                related_threads.append({
-                    'content': content,
+                documents.append({
+                    'content': clean_content,
                     'tstamp': thread_summary.tstamp,
                     'matching_terms': matching_terms,
-                    'word_list': word_list,
+                    'category': '',
                 })
 
-        return related_threads
+        return documents
