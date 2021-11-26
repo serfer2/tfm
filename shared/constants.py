@@ -1,3 +1,6 @@
+CAT_SUPPLY = 'supply'
+CAT_DEMAND = 'demand'
+
 HF_SITE_ID = 0
 
 #  https://hackforums.net/forumdisplay.php?fid=<int>
@@ -48,16 +51,17 @@ RELATED_TERMS = {
             'pounds', 'euros', 'dollars', 'rubles',
             'bitcoin', 'ecoin', 'ethereum', 'litecoin',
             'btc', 'eth', 'ltc',
-        ),
-        'trade_terms_buy': (
-            'wtb', 'buy', 'pay', 'market', 'paid', 'payment', 'price',
-            'service', 'source',
-        ),
-        'trade_terms_sell': (
-            'wts', 'payment', 'premium',
             'interkassa', 'paypal', 'perfectmoney',
-            'price', 'sale', 'selling', 'selly',
-            'service', 'shop', 'source', 'store', 'trusted',
+        ),
+        'trade_terms_demand': (
+            'wtb', 'buying', 'buy', 'pay', 'paid', 'payment',
+            'market',
+            'i need', 'i\'ll pay', 'anyone selling', 'looking for'
+        ),
+        'trade_terms_supply': (
+            'wts', 'premium', 'offer',
+            'sale', 'selling', 'selly', '4sale',
+            'shop', 'store', 'trusted',
         ),
     },
 }

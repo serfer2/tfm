@@ -46,7 +46,7 @@ class ToolsTestCase(TestCase):
             '$2/hour site any link to any site'
         ))
 
-    def test_it_gets_a_lower_case_unique_words_list_from_a_string_in_same_order(self):
+    def test_it_gets_a_lower_case_words_list_from_a_string(self):
         text1 = '$2/hour  site any  link to any site '
         text2 = '๖predator hosting | UPTIME | cheap | fast | Hosting'
         text3 = 'free irc vps Doser FREE!! for all members!!!!!!!!!!!!!!!!!!'
@@ -58,14 +58,14 @@ class ToolsTestCase(TestCase):
         words4 = tokenize(text4)
 
         expect(words1).to(equal([
-            '$2', 'hour', 'site', 'any', 'link', 'to',
+            '$2', 'hour', 'site', 'any', 'link', 'to', 'any', 'site',
         ]))
         expect(words2).to(equal([
-            'predator', 'hosting', 'uptime', 'cheap', 'fast'
+            'predator', 'hosting', 'uptime', 'cheap', 'fast', 'hosting',
         ]))
         expect(words3).to(equal([
-            'free', 'irc', 'vps', 'doser', 'for', 'all', 'members'
+            'free', 'irc', 'vps', 'doser', 'free', 'for', 'all', 'members',
         ]))
         expect(words4).to(equal([
-            'darkddoser', 'login', '$15', 'title', 'on', 'site', 'for', '$25'
+            'darkddoser', 'login', '$15', 'title', 'darkddoser', '$15', 'on', 'site', 'for', '$25',
         ]))
