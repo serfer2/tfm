@@ -9,5 +9,7 @@ RUN rm /etc/localtime \
     && echo "${TZ}" > /etc/timezone \
     && dpkg-reconfigure -f noninteractive tzdata
 COPY . /app
+RUN apt-get update
+RUN apt-get install python3-sklearn python3-sklearn-lib
 RUN python -m pip install --upgrade pip
 RUN pip3 install -r requirements.txt
