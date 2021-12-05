@@ -49,18 +49,18 @@ DB connection credentials are the same you've set in `docker/postgres_crimebb/.e
 
 **NOTE**
 
-You'll need to place `.sql` dump files in folder called `../crimeBB` (one level hihger than current dir)
+You'll need to place `.sql` dump files in folder called `../crimeBB` (one level higher than current dir)
 
 ## TIPS
 
-Postgres DB data is stored inside project folder, in `postgres-data` directory.
+Postgres DB data is stored one level higher than project folder, in `../postgres-data` directory.
 
 There's no need to run DB hydratation more than once.
 
 In the case you get some permission errors when trying to run project containers, all you have to do is to get permissions for Postgres DB data directory before running containers:
 
 ```
-sudo chown -R $USER postgres-data && docker-compose up -d
+sudo chown -R $USER ../postgres-data && docker-compose up -d
 ```
 
 ## Author
