@@ -131,6 +131,9 @@ class HackForumsThreadsExtractionTestCase(TestCase):
 
         expect(interesting_threads_data).to(equal([
             {
+                'site': 0,
+                'thread': 3,
+                'post': 1,
                 'content': 'stresser service from 25$ trusted results',
                 'tstamp': tstamp,
                 'matching_terms': ['stresser', ],
