@@ -6,6 +6,9 @@ from typing import (
 
 
 class Document(TypedDict):
+    site: int
+    thread: int
+    post: int
     content: str
     tstamp: datetime
     matching_terms: List[str]

@@ -8,15 +8,18 @@ from typing import (
     Tuple,
 )
 
+import pandas as pd
 from psycopg2 import connect
 
 from application.services import (
     CategoryAnnotation,
+    HackForumsPostsCount,
     HackForumsThreadsExtraction,
 )
 from domain.models import Document
 from infrastructure.repositories import (
     ForumDBRepository,
+    PostsCountDBRepository,
     ThreadSummaryDBRepository,
 )
 from shared.constants import (
@@ -25,25 +28,36 @@ from shared.constants import (
     RELATED_TERMS,
 )
 
-# usage:  python main.py [annotate | groundtruth]
+# usage:  python main.py [annotate | generate_datasets]
 
 
 def main():
     try:
+
         if 'annotate' in sys.argv:
             _generate_auto_annotated_datasets()
-        elif 'groundtruth' in sys.argv:
-            _generate_groundtruth_and_full_datasets()
+
+        elif 'generate_datasets' in sys.argv:
+            _generate_ddos_groundtruth_and_ddos_full_datasets()
+            _generate_hf_market_posts_count_datasets()
+            _generate_ddos_threads_posts_count_datasets()
+
         else:
             raise Exception('wrong option')
+
     except Exception:
         print(traceback.format_exc())
-        print('usage: python entrypoint.py [annotate | groundtruth]')
+        print('usage: python entrypoint.py [annotate | generate_datasets]')
         return 1
     return 0
 
 
-def _generate_groundtruth_and_full_datasets() -> None:
+def _generate_ddos_groundtruth_and_ddos_full_datasets() -> None:
+    """
+    It reads DDoS related supply and demand datasets and wites a
+    new ground truth dataset with labeled docs.
+    It also creates an uncategorized DDoS related full dataset (no labels).
+    """
     supply, demand = _load_category_annotated_datasets()
     documents = _extract_ddos_related_documents()
     ground_truth_documents = []
@@ -140,8 +154,57 @@ def _extract_ddos_related_documents() -> List[Document]:
     end = datetime.now()
     print(f'*** Related threads ... {len(documents)}')
     print(f'*** End ............... {end}')
+    dbc.close()
 
     return documents
+
+
+def _generate_hf_market_posts_count_datasets():
+    """
+    Builds and persists a CSV dataset with a count of total posts
+    in Hack Forums "Market" section threads.
+    Results are grouped by year and month, ordered by date.
+    """
+    dbc = connect(
+        host=os.getenv('POSTGRES_HOST', 'localhost'),
+        database=os.getenv('POSTGRES_DB', 'crimebb'),
+        user=os.getenv('POSTGRES_USER', 'crimebb'),
+        password=os.getenv('POSTGRES_PASSWORD', 'crimebbinlocalhost'),
+    )
+    # thread_ids = list(set(pd.read_csv('datasets/ddos_full_dataset.csv')['thread']))
+    posts_counter_service = HackForumsPostsCount(
+        forum_repository=ForumDBRepository(dbc=dbc),
+        posts_count_repository=PostsCountDBRepository(dbc=dbc),
+    )
+    _export_to_csv(
+        filepath='datasets/market_section_posts_count_dataset.csv',
+        to_csv=posts_counter_service.count_market_section_posts()
+    )
+    dbc.close()
+
+
+def _generate_ddos_threads_posts_count_datasets():
+    """
+    Builds and persists a CSV dataset with a count of total posts
+    in Hack Forums DDoS related Threads.
+    Results are grouped by year and month, ordered by date.
+    """
+    dbc = connect(
+        host=os.getenv('POSTGRES_HOST', 'localhost'),
+        database=os.getenv('POSTGRES_DB', 'crimebb'),
+        user=os.getenv('POSTGRES_USER', 'crimebb'),
+        password=os.getenv('POSTGRES_PASSWORD', 'crimebbinlocalhost'),
+    )
+    thread_ids = list(set(pd.read_csv('datasets/ddos_full_dataset.csv')['thread']))
+    posts_counter_service = HackForumsPostsCount(
+        forum_repository=ForumDBRepository(dbc=dbc),
+        posts_count_repository=PostsCountDBRepository(dbc=dbc),
+    )
+    _export_to_csv(
+        filepath='datasets/ddos_posts_count_dataset.csv',
+        to_csv=posts_counter_service.count_threads_posts(thread_ids=thread_ids)
+    )
+    dbc.close()
 
 
 if __name__ == '__main__':

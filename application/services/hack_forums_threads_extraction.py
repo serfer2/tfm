@@ -13,8 +13,8 @@ from domain.repositories import (
     ThreadSummaryRepository,
 )
 from shared.constants import (
-    HF_SITE_ID,
     HF_MARKET_SUBFORUMS_FID,
+    HF_SITE_ID,
 )
 from shared.tools import (
     hf_clean_text,
@@ -32,10 +32,19 @@ class HackForumsThreadsExtraction:
         self._forum_repository = forum_repository
         self._thread_summary_repository = thread_summary_repository
 
-    def extract(self, related_terms: Iterable[str]) -> List[Document]:
+    def extract(
+        self,
+        related_terms: Iterable[str],
+    ) -> List[Document]:
         subforum_ids = [subforum.id for subforum in self._get_market_subforums()]
-        thread_summaries = self._read_forums_threads(forum_ids=subforum_ids)
-        return self._filter_threads_by_related_terms(thread_summaries, related_terms)
+        thread_summaries = self._thread_summary_repository.read(
+            site_id=HF_SITE_ID,
+            forum_ids=subforum_ids
+        )
+        return self._filter_threads_by_related_terms(
+            thread_summaries,
+            related_terms,
+        )
 
     def _get_market_subforums(self) -> List[Forum]:
         website = 'https://hackforums.net/forumdisplay.php'
@@ -43,12 +52,6 @@ class HackForumsThreadsExtraction:
         return self._forum_repository.filter_by_url_pattern(
             site_id=HF_SITE_ID,
             url_patterns=url_patterns
-        )
-
-    def _read_forums_threads(self, forum_ids: List[int]) -> List[ThreadSummary]:
-        return self._thread_summary_repository.read(
-            site_id=HF_SITE_ID,
-            forum_ids=forum_ids
         )
 
     def _filter_threads_by_related_terms(
@@ -76,6 +79,9 @@ class HackForumsThreadsExtraction:
 
             if matching_terms:
                 documents.append({
+                    'site': thread_summary.site,
+                    'thread': thread_summary.thread,
+                    'post': thread_summary.post,
                     'content': clean_content,
                     'tstamp': thread_summary.tstamp,
                     'matching_terms': matching_terms,
