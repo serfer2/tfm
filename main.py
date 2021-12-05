@@ -195,6 +195,8 @@ def _generate_ddos_threads_posts_count_datasets():
         user=os.getenv('POSTGRES_USER', 'crimebb'),
         password=os.getenv('POSTGRES_PASSWORD', 'crimebbinlocalhost'),
     )
+
+    # All DDoS related posts count by year and month
     thread_ids = list(set(pd.read_csv('datasets/ddos_full_dataset.csv')['thread']))
     posts_counter_service = HackForumsPostsCount(
         forum_repository=ForumDBRepository(dbc=dbc),
@@ -204,6 +206,7 @@ def _generate_ddos_threads_posts_count_datasets():
         filepath='datasets/ddos_posts_count_dataset.csv',
         to_csv=posts_counter_service.count_threads_posts(thread_ids=thread_ids)
     )
+
     dbc.close()
 
 
