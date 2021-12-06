@@ -60,7 +60,7 @@ class HackForumsThreadsExtraction:
         related_terms: Iterable[str],
     ) -> List[Document]:
         """
-        An interesting thread, almost one or more related terms.
+        An interesting thread, should have almost one or more related terms.
         """
         tech_terms = [term.lower() for term in related_terms]
         documents = []
