@@ -45,14 +45,6 @@ RELATED_TERMS = {
         'mirai',
     ),
     'trade_terms': {
-        'trade_terms_currency': (
-            '£', '€', '$', '₽',
-            'pound', 'euro', 'dollar', 'ruble',
-            'pounds', 'euros', 'dollars', 'rubles',
-            'bitcoin', 'ecoin', 'ethereum', 'litecoin',
-            'btc', 'eth', 'ltc',
-            'interkassa', 'paypal', 'perfectmoney',
-        ),
         'trade_terms_demand': (
             'wtb', 'buying', 'buy', 'pay', 'paid', 'payment',
             'market',
@@ -63,5 +55,57 @@ RELATED_TERMS = {
             'sale', 'selling', 'selly', '4sale',
             'shop', 'store', 'trusted',
         ),
+    },
+}
+
+PAYMENT_METHODS = {
+    'pound': {
+        'expressions': ('£',),
+        'words': ('pound', 'pounds', 'gbp',),
+    },
+    'euro': {
+        'expressions': ('€',),
+        'words': ('euro', 'euros', 'eur',),
+    },
+    'dollar': {
+        'expressions': ('$',),
+        'words': ('dollar', 'dollars',),
+    },
+    'ruble': {
+        'expressions': ('₽',),
+        'words': ('ruble', 'rubles',),
+    },
+    'bitcoin': {
+        'expressions': ('₿',),
+        'words': ('bitcoin', 'bitcoins', 'btc', 'xbt',),
+
+    },
+    'ethereum': {
+        'expressions': ('Ξ',),
+        'words': ('ethereum', 'ethereums', 'eth',),
+    },
+    'litecoin': {
+        'expressions': ('Ł',),
+        'words': ('litecoin', 'litecoins', 'ltc',),
+    },
+    'ecoin': {
+        'expressions': (),
+        'words': ('ecoin', 'ecoins', 'e-coin',),
+    },
+    'interkassa': {
+        'expressions': (),
+        'words': ('interkassa', 'interkasa',),
+    },
+    'paypal': {
+        'expressions': (),
+        'words': ('paypal', 'pypl',),
+    },
+    'perfectmoney': {
+        'expressions': ('perfect money',),
+        'words': ('perfectmoney', '',),
+    },
+    'westernunion': {
+        'expressions': ('western union',),
+        'words': ('westernunion',),
     },
 }
