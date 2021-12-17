@@ -32,6 +32,24 @@ from shared.constants import (
 
 
 def main():
+    """
+    Helper tool for preparing "groung truth" and "full" datasets.
+    Options:
+        - annotate:
+        Connects to DB and extracts documents from HF market section Threads
+        related with DDoS. Extracted data is then analysed and relevant terms
+        regarding "supply" and "demand" are annotated in every document.
+        Resulting data is saved to a CSV, intended to be seed for building
+        "supply" and "demand" datasets by hand.
+
+        - generate_datasets:
+        Once "supply" and "demand" datasets have been created (by hand, starting
+        from pre-annotated dataset), this option builds "ground truth" and
+        "full" datasets.
+        Then, a pair of extra datasets are built. These datasets are a resume of
+        quantity of posts in HF Market section and in DDoS related Threads. The
+        aim of these datasets is to be used in workbook data analysis.
+    """
     try:
 
         if 'annotate' in sys.argv:
@@ -50,6 +68,18 @@ def main():
         print('usage: python entrypoint.py [annotate | generate_datasets]')
         return 1
     return 0
+
+
+def _generate_auto_annotated_datasets():
+    """
+        Generates trainning and test datasets by
+        extracting DDoS related terms and splitting
+        results (20% trainning, 80% test).
+    """
+    annotator = CategoryAnnotation()
+    documents = _extract_ddos_related_documents()
+    to_csv = [_annotate_document(annotator, doc) for doc in documents]
+    _export_to_csv('datasets/ddos_auto_annotated_dataset.csv', to_csv)
 
 
 def _generate_ddos_groundtruth_and_ddos_full_datasets() -> None:
@@ -82,6 +112,10 @@ def _generate_ddos_groundtruth_and_ddos_full_datasets() -> None:
 
 
 def _load_category_annotated_datasets() -> Tuple[List[str]]:
+    """
+    Reads supply and demand datasets and loads and returns its
+    contents in two lists.
+    """
     supply = []
     demand = []
     with open('datasets/supply.csv', 'r') as fin:
@@ -97,19 +131,12 @@ def _load_category_annotated_datasets() -> Tuple[List[str]]:
     return supply, demand
 
 
-def _generate_auto_annotated_datasets():
-    """
-        Generates trainning and test datasets by
-        extracting DDoS related terms and splitting
-        results (20% trainning, 80% test).
-    """
-    annotator = CategoryAnnotation()
-    documents = _extract_ddos_related_documents()
-    to_csv = [_annotate_document(annotator, doc) for doc in documents]
-    _export_to_csv('datasets/ddos_auto_annotated_dataset.csv', to_csv)
-
-
 def _annotate_document(annotator: CategoryAnnotation, doc: dict) -> dict:
+    """
+    Given a Document (dictionary), it extracts all supply/demand terms
+    from its content. That info will be useful, then, when preparing
+    datasets by hand.
+    """
     supply_terms = annotator.supply_terms(doc)
     demand_terms = annotator.demand_terms(doc)
     doc['supply'] = bool(supply_terms)
@@ -126,6 +153,10 @@ def _annotate_document(annotator: CategoryAnnotation, doc: dict) -> dict:
 
 
 def _export_to_csv(filepath: str, to_csv: List[dict]):
+    """
+    Given a list of dictionaries, writes it to a CSV file.
+    Each dictionary field will be a column in CSV.
+    """
     with open(filepath, 'w', encoding='utf8', newline='') as fileout:
         csv_witer = csv.DictWriter(fileout, fieldnames=to_csv[0].keys())
         csv_witer.writeheader()
@@ -133,6 +164,11 @@ def _export_to_csv(filepath: str, to_csv: List[dict]):
 
 
 def _extract_ddos_related_documents() -> List[Document]:
+    """
+    Connects to DB and extracts, from makert section sub-forums, all
+    documents related with DDoS.
+    A Document is a mix of Thread info and first Post of that thread.
+    """
     dbc = connect(
         host=os.getenv('POSTGRES_HOST', 'localhost'),
         database=os.getenv('POSTGRES_DB', 'crimebb'),
