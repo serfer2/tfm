@@ -76,8 +76,8 @@ def _generate_auto_annotated_datasets():
         extracting DDoS related terms and splitting
         results (20% trainning, 80% test).
     """
-    annotator = CategoryAnnotation()
     documents = _extract_ddos_related_documents()
+    annotator = CategoryAnnotation()
     to_csv = [_annotate_document(annotator, doc) for doc in documents]
     _export_to_csv('datasets/ddos_auto_annotated_dataset.csv', to_csv)
 
